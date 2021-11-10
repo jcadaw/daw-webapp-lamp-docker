@@ -1,0 +1,57 @@
+version: "3.8"
+services:
+  php:
+    build: 
+      context: ./php
+      args:
+        PHP_VERSION: ${PHP_VERSION}
+    image: "daw-php:2021.11"
+    container_name: daw-php
+    networks:
+      daw-red-www:    
+      daw-red-mysql:
+    volumes:
+      - "${DIR_PROYECTO}:/var/www/html"
+    depends_on:
+      - mysql         
+
+  apache:
+    build: 
+      context: ./apache
+      args:
+        APACHE_VERSION: ${APACHE_VERSION}
+    image: "daw-apache:2021.11"
+    container_name: daw-apache
+    ports: 
+      - "80:80"
+    networks:
+      daw-red-www:        
+    volumes:
+      - "${DIR_PROYECTO}:/var/www/html"
+    depends_on:
+      - php    
+
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    container_name: daw-mysql
+    ports:
+      - "3306:3306"
+    networks:
+      daw-red-mysql:
+    volumes:
+      - "./mysql/dump:/docker-entrypoint-initdb.d"
+      - "daw-vol-mysql:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+networks:
+  daw-red-www:
+    name: daw-red-www
+  daw-red-mysql: 
+    name: daw-red-mysql
+volumes:
+  daw-vol-mysql:
+    name: daw-vol-mysql

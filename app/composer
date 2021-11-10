@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# para usar composer de php a través de un contenedor de docker.
+# uso:
+# ./composer OPCIONES_COMPOSER
+docker run -ti --rm -v $PWD:/app --user $(id -u):$(id -g) composer:2.1.11 $@
