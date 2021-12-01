@@ -20,6 +20,7 @@ Creación de un esqueleto para una aplicación web usando `Apache`, `PHP` y `MyS
           <li><a href="#directorio-apache">directorio apache</a></li>
           <li><a href="#directorio-mysql">directorio MySQL</a></li>
           <li><a href="#directorio-php">directorio PHP</a></li>
+          <li><a href="#directorio-phpmyadmin">directorio phpMyAdmin</a></li>
         </ul>
       </ul>
       <li><a href="#imágenes-de-docker-usadas">Imágenes de docker usadas</a></li>
@@ -39,10 +40,12 @@ Creación de un esqueleto para una aplicación web usando `Apache`, `PHP` y `MyS
 <!-- ABOUT THE PROJECT -->
 ## Sobre el repo
 
-El objetivo de este repositorio es servir de armazón para desarrollar una aplicación web usando: `Apache`, `PHP` y `MySQL` con `docker`. También contiene un script para facilitar el uso de `composer` (PHP) a través de docker.
+El objetivo de este repositorio es servir de armazón para desarrollar una aplicación web usando: `Apache`, `PHP` y `MySQL` con `docker`. También contiene un script para facilitar el uso de `composer` (PHP) a través de docker. Hace uso de `phpMyAdmin`, que puede ser 
+accedido a través de http://localhost:8080
 
-`Docker compose` creará 3 contenedores: 
+`Docker compose` creará 4 contenedores: 
 * 1 contenedor con PHP-fpm  8.0 (distribución alpine)
+* 1 contenedor con phpMyAdmin-fpm  5.1.1 (distribución alpine)
 * 1 contenedor con apache 2.4 (distribución alpine)
 * 1 contenedor con MySQL 8
 
@@ -66,6 +69,8 @@ La estructura de los directorios/archivos es la siguiente:
 │   │   └── dump
 │   │       └── ejemplo.sql
 │   ├── php
+│   │   └── Dockerfile
+│   ├── phpmyadmin
 │   │   └── Dockerfile
 │   ├── .env
 │   └── docker-compose.yml
@@ -113,10 +118,12 @@ En este repositorio se va a configurar un contenedor para `PHP`, otro para `apac
 Para determinar las versiones de las imágenes en las que nos vamos a basar, usamos el fichero de configuración `.env`
 
 Creamos dos redes: 
-  - daw-red-www: en esta red están los contenedores `apache` y `php`
-  - daw-red-mysql: en esta red están los contenedores `mysql` y `php`
+  - `daw-red-www`: en esta red están los contenedores `apache` , `php` y `phpmyadmin`
+  - `daw-red-mysql`: en esta red están los contenedores `mysql` , `php` y `phpmyadmin`
 
-Creamos un volumen para la gestión de la base de datos: `daw-vol-mysql`
+Creamos los volúmenes: 
+  - `daw-vol-mysql`: volumen para la gestión de la base de datos 
+  - `daw-vol-phpmyadmin`: volumen donde está la aplicación phpMyAdmin
 
 <p align="right">(<a href="#top">volver arriba</a>)</p>
 
@@ -128,6 +135,7 @@ Fichero en el que configurar algunos parámetros para la creación de los conten
 APACHE_VERSION=2.4.51
 MYSQL_VERSION=8.0.27
 PHP_VERSION=8.1.0RC5
+PHPMYADMIN_VERSION=5.1.1
 
 MYSQL_ROOT_PASSWORD=rpass
 MYSQL_DATABASE=daw_db
@@ -156,6 +164,11 @@ Contiene el directorio `dump` en el cual hemos introducido un script que se ejec
 
 Contiene el `Dockerfile` necesario para construir la imagen. De primeras únicamente instalamos la extensión `mysqli`.
 
+#### directorio PHPMyAdmin
+
+Contiene el `Dockerfile` necesario para construir la imagen. Cambia el puerto por defecto
+de php-fpm para que use el 9001 para usar el contenedor de phpMyAdmin, el 9000 será usado para las peticiones PHP por defecto.
+
 
 ## Imágenes de docker usadas
 
@@ -163,6 +176,7 @@ Nos hemos basado en las imágenes oficiales de cada uno de los servicios. Usamos
 
 * [apache](https://hub.docker.com/_/httpd)
 * [php](https://hub.docker.com/_/php)
+* [phpMyAdmin](https://hub.docker.com/_/phpmyadmin)
 * [MySQL](https://hub.docker.com/_/mysql)
 
 <p align="right">(<a href="#top">volver arriba</a>)</p>
@@ -201,6 +215,9 @@ Tienes que tener `docker` y `docker-compose` instalado en tu máquina
 ### Uso
 
 A partir de aquí, siénte libre para crear tu aplicación web.
+
+Para entrar en phpmyadmin simplemente usa http://localhost:8080
+
 <p align="right">(<a href="#top">volver arriba</a>)</p>
 
 

@@ -15,6 +15,23 @@ services:
     depends_on:
       - mysql         
 
+  phpmyadmin:
+    build: 
+      context: ./phpmyadmin
+      args:
+        PHPMYADMIN_VERSION: ${PHPMYADMIN_VERSION}
+    image: "daw-phpmyadmin:2021.11"    
+    container_name: daw-phpmyadmin
+    networks:
+      daw-red-www:    
+      daw-red-mysql:
+    environment:
+      PMA_HOST: mysql
+    volumes:
+      - "daw-vol-phpmyadmin:/var/www/html"      
+    depends_on:
+      - mysql            
+
   apache:
     build: 
       context: ./apache
@@ -24,12 +41,15 @@ services:
     container_name: daw-apache
     ports: 
       - "80:80"
+      - "8080:8080"
     networks:
       daw-red-www:        
     volumes:
       - "${DIR_PROYECTO}:/var/www/html"
+      - "daw-vol-phpmyadmin:/var/www/html/phpmyadmin"
     depends_on:
-      - php    
+      - php 
+      - phpmyadmin   
 
   mysql:
     image: mysql:${MYSQL_VERSION}
@@ -55,3 +75,6 @@ networks:
 volumes:
   daw-vol-mysql:
     name: daw-vol-mysql
+  daw-vol-phpmyadmin: 
+    name: daw-vol-phpmyadmin
+
